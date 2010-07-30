@@ -59,5 +59,6 @@ setup(
     description = 'Extension for tornado',
     packages = packages,
     data_files = data_files,
+    script = ["djangornado/bin/djangornado-amin.py"],
 )
 
