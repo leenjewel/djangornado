@@ -41,7 +41,8 @@ class DjangornadoHandler(RequestHandler):
 
     @asynchronous
     def _asyn_call(self, callback_func, request):
-        callback_func(request, callback = self._callback)
+        result = callback_func(request)
+        self._callback(result)
     
     def _callback(self, result):
         self._render_response(result)

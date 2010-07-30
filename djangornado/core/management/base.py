@@ -220,41 +220,6 @@ class BaseCommand(object):
         """
         raise NotImplementedError()
 
-class AppCommand(BaseCommand):
-    """
-    A management command which takes one or more installed application
-    names as arguments, and does something with each of them.
-
-    Rather than implementing ``handle()``, subclasses must implement
-    ``handle_app()``, which will be called once for each application.
-
-    """
-    args = '<appname appname ...>'
-
-    def handle(self, *app_labels, **options):
-        from django.db import models
-        if not app_labels:
-            raise CommandError('Enter at least one appname.')
-        try:
-            app_list = [models.get_app(app_label) for app_label in app_labels]
-        except (ImproperlyConfigured, ImportError), e:
-            raise CommandError("%s. Are you sure your INSTALLED_APPS setting is correct?" % e)
-        output = []
-        for app in app_list:
-            app_output = self.handle_app(app, **options)
-            if app_output:
-                output.append(app_output)
-        return '\n'.join(output)
-
-    def handle_app(self, app, **options):
-        """
-        Perform the command's actions for ``app``, which will be the
-        Python module corresponding to an application name given on
-        the command line.
-
-        """
-        raise NotImplementedError()
-
 class LabelCommand(BaseCommand):
     """
     A management command which takes one or more arbitrary arguments

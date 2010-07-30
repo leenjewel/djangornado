@@ -9,7 +9,9 @@ from djangornado.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 import os
 import sys
-import tornado
+import tornado.web
+import tornado.httpserver
+import djangornado
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -55,7 +57,7 @@ class Command(BaseCommand):
                 application = tornado.web.Application([('^/(.*)$', DjangornadoHandler),], **settings)
                 http_server = tornado.httpserver.HTTPServer(application)
                 http_server.bind(int(port), addr)
-                http_server.start(pnum)
+                http_server.start(int(pnum))
                 tornado.ioloop.IOLoop.instance().start()
             except Exception, e:
                 sys.stderr.write("Error: %s \n" % str(e))
