@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-class RKRequest(object):
+class DjangornadoRequest(object):
     def __init__(self, handler):
         self.handler = handler
     

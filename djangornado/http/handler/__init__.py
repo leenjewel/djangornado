@@ -2,21 +2,21 @@
 
 from tornado.web import RequestHandler
 from tornado.web import asynchronous
-from djangornado.http.request import RKRequest
+from djangornado.http.request import DjangornadoRequest
 from djangornado.utils.importlib import import_module
 from djangornado.conf import settings
 from djangornado.http.response import RenderResponse
 from djangornado.middleware import middleware
 
-class RKHandler(RequestHandler):
+class DjangornadoHandler(RequestHandler):
     def _execute(self, transforms, *args, **kwargs):
-        self._rk_request = RKRequest(self)
+        self._rk_request = DjangornadoRequest(self)
         try:
             for processer in middleware.request_middleware:
                 processer(self._rk_request)
         except Exception, e:
             self._handle_request_exception(e)
-        super(RKHandler, self)._execute(transforms, *args, **kwargs)
+        super(DjangornadoHandler, self)._execute(transforms, *args, **kwargs)
     
     def finish(self, chunk = None):
         try:
@@ -24,19 +24,16 @@ class RKHandler(RequestHandler):
                 processer(self._rk_request)
         except Exception, e:
             self._handle_request_exception(e)
-        super(RKHandler, self).finish(chunk)
+        super(DjangornadoHandler, self).finish(chunk)
 
     def get_from_urls(self, pattern):
         urls = import_module(settings.ROOT_URLCONF)
         callback_func = None
+        is_asyn = self._rk_request.get_argument("asyn", False)
         for u in getattr(urls, "urlpatterns", []):
             if u.regex.match(pattern):
                 callback_func = u._get_callback()
-                return callback_func, False
-        for u in getattr(urls, "asyn_urlpatterns", []):
-            if u.regex.match(pattern):
-                callback_func = u._get_callback()
-                return callback_func, True
+                return callback_func, is_asyn
         return None, False
     
     def _syn_call(self, callback_func, request):
