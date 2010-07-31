@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+from tornado.web import HTTPError
 from tornado.web import RequestHandler
 from tornado.web import asynchronous
 from djangornado.http.request import DjangornadoRequest
@@ -34,7 +35,7 @@ class DjangornadoHandler(RequestHandler):
             if u.regex.match(pattern):
                 callback_func = u._get_callback()
                 return callback_func, is_asyn
-        return None, False
+        raise HTTPError(404)
     
     def _syn_call(self, callback_func, request):
         self._render_response(callback_func(request))
