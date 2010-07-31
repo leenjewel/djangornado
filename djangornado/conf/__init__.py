@@ -1,7 +1,9 @@
 # -*-coding:utf-8 -*-
 
 import os
+import re
 from djangornado.utils.importlib import import_module
+from djangornado.core.urlresolvers import RegexURLPattern, RegexURLResolver
 
 __all__ = ['settings', 'urls']
 
@@ -25,3 +27,38 @@ class LazySettings(dict):
         return self.get(attr)
 
 settings = LazySettings()
+
+class LazyUrls(object):
+    def __init__(self):
+        if not hasattr(settings, "ROOT_URLCONF"):
+            raise ImportError('No settings.ROOT_URLCONF given.')
+        urls = import_module(settings.ROOT_URLCONF)
+        if not hasattr(urls, "urlpatterns"):
+            raise ImportError('urlpatterns in urls is underfined.')
+        self._urlpatterns = getattr(urls, "urlpatterns", [])
+
+    def _callback_from_patterns(self, urlpatterns, pattern, regex = None):
+        has_resolver = False
+        for u in urlpatterns:
+            if isinstance(u, RegexURLPattern):
+                if regex:
+                    p_pattern = u.regex.pattern
+                    if p_pattern.startswith('^'):
+                        p_pattern = p_pattern[1:]
+                    if re.match(regex+p_pattern, pattern):
+                        return u.callback
+                elif u.regex.match(pattern):
+                    return u.callback
+            elif has_resolver is False:
+                has_resolver = True
+        if has_resolver:
+            for u in urlpatterns:
+                if isinstance(u, RegexURLResolver):
+                    return self._callback_from_patterns(u.urlpatterns, pattern, u.regex.pattern)
+        return None
+    
+    def callback(self, pattern):
+        return self._callback_from_patterns(self._urlpatterns, pattern)
+                
+
+urlpatterns = LazyUrls()

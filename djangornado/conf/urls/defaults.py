@@ -5,13 +5,10 @@ Created on 2010-7-29
 @author: leenjewel
 '''
 
-from djangornado.core.urlresolvers import RegexURLPattern
+from djangornado.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from djangornado.core.exceptions import ImproperlyConfigured
 
 __all__ = ['include', 'patterns', 'url']
-
-handler404 = 'django.views.defaults.page_not_found'
-handler500 = 'django.views.defaults.server_error'
 
 def include(arg, namespace=None, app_name=None):
     if isinstance(arg, tuple):
@@ -35,6 +32,10 @@ def patterns(prefix, *args):
     return pattern_list
 
 def url(regex, view, kwargs=None, name=None, prefix=''):
+    if isinstance(view, (list,tuple)):
+        # For include(...) processing.
+        urlconf_module, app_name, namespace = view
+        return RegexURLResolver(regex, urlconf_module, kwargs, app_name=app_name, namespace=namespace)
     if isinstance(view, basestring):
         if not view:
             raise ImproperlyConfigured('Empty URL pattern view name not permitted (for pattern %r)' % regex)

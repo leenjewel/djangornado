@@ -6,7 +6,7 @@ Created on 2010-7-29
 '''
 
 import re
-from djangornado.core.exceptions import ViewDoesNotExist
+from djangornado.core.exceptions import ViewDoesNotExist, ImproperlyConfigured
 from djangornado.utils.importlib import import_module
 from djangornado.utils.functional import memoize
 
@@ -47,6 +47,33 @@ def get_mod_func(callback):
     except ValueError:
         return callback, ''
     return callback[:dot], callback[dot+1:]
+
+class RegexURLResolver(object):
+    def __init__(self, regex, urlconf_name, default_kwargs=None, app_name=None, namespace=None):
+        # regex is a string representing a regular expression.
+        # urlconf_name is a string representing the module containing URLconfs.
+        self.regex = re.compile(regex, re.UNICODE)
+        self.urlconf_name = urlconf_name
+        if not isinstance(urlconf_name, basestring):
+            self._urlconf_module = self.urlconf_name
+        self.namespace = namespace
+    
+    def _get_urlconf_module(self):
+        try:
+            return self._urlconf_module
+        except AttributeError:
+            self._urlconf_module = import_module(self.urlconf_name)
+            return self._urlconf_module
+    urlconf_module = property(_get_urlconf_module)
+
+    def _get_url_patterns(self):
+        patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+        try:
+            iter(patterns)
+        except TypeError:
+            raise ImproperlyConfigured("The included urlconf %s doesn't have any patterns in it" % self.urlconf_name)
+        return patterns
+    urlpatterns = property(_get_url_patterns)
 
 class RegexURLPattern(object):
     def __init__(self, regex, callback, default_args=None, name=None):

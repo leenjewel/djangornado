@@ -5,7 +5,7 @@ from tornado.web import RequestHandler
 from tornado.web import asynchronous
 from djangornado.http.request import DjangornadoRequest
 from djangornado.utils.importlib import import_module
-from djangornado.conf import settings
+from djangornado.conf import settings, urlpatterns
 from djangornado.http.response import RenderResponse
 from djangornado.middleware import middleware
 
@@ -28,13 +28,10 @@ class DjangornadoHandler(RequestHandler):
         super(DjangornadoHandler, self).finish(chunk)
 
     def get_from_urls(self, pattern):
-        urls = import_module(settings.ROOT_URLCONF)
-        callback_func = None
         is_asyn = self._rk_request.get_argument("asyn", False)
-        for u in getattr(urls, "urlpatterns", []):
-            if u.regex.match(pattern):
-                callback_func = u._get_callback()
-                return callback_func, is_asyn
+        callback = urlpatterns.callback(pattern)
+        if callback:
+            return callback, is_asyn
         raise HTTPError(404)
     
     def _syn_call(self, callback_func, request):
@@ -52,7 +49,8 @@ class DjangornadoHandler(RequestHandler):
     def _render_response(self, response):
         if isinstance(response, RenderResponse):
             self.render(response.template, **response.context)
-        self.write(str(response))
+        else:
+            self.write(str(response))
     
     def get(self, pattern):
         callback_func, asyn = self.get_from_urls(pattern)
