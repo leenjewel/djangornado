@@ -8,14 +8,18 @@ BASEURL = 'http://'
 BASEROOT = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-MEDIA_ROOT = BASEROOT + "/static"
+static_path = BASEROOT + "/static"
 
-MEDIA_URL = BASEURL+"/static/ap/static"
+MEDIA_URL = BASEURL+"/static"
 
 SECRET_KEY = ''
 
 MIDDLEWARE_CLASSES = (
-    
+    'djangornado.contrib.sessions.middleware.SessionMiddleware'
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+
 )
 
 ROOT_URLCONF = 'apps.urls'

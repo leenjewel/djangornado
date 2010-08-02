@@ -11,10 +11,12 @@ from djangornado.middleware import middleware
 
 class DjangornadoHandler(RequestHandler):
     def _execute(self, transforms, *args, **kwargs):
-        self._rk_request = DjangornadoRequest(self)
+        self._rk_request = DjangornadoRequest(self, *args, **kwargs)
         try:
             for processer in middleware.request_middleware:
-                processer(self._rk_request)
+                response = processer(self._rk_request)
+                if response:
+                    self._render_response(response)
         except Exception, e:
             self._handle_request_exception(e)
         super(DjangornadoHandler, self)._execute(transforms, *args, **kwargs)
