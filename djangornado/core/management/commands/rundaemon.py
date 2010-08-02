@@ -30,8 +30,9 @@ Optional settings: (setting=value)
     
     DAEMON_OPTIONS = {
         'pnum': 1,
+        'method':None,
         'workdir': '/',
-        "pidfile":None,
+        'pidfile':None,
         'host': None,
         'port': None,
         'outlog': None,
@@ -109,12 +110,12 @@ Optional settings: (setting=value)
                     pass
 
         daemon_kwargs = {}
-        if options['outlog']:
-            daemon_kwargs['out_log'] = options['outlog']
-        if options['errlog']:
-            daemon_kwargs['err_log'] = options['errlog']
-        if options['umask']:
-            daemon_kwargs['umask'] = int(options['umask'])
+        if daemon_options['outlog']:
+            daemon_kwargs['out_log'] = daemon_options['outlog']
+        if daemon_options['errlog']:
+            daemon_kwargs['err_log'] = daemon_options['errlog']
+        if daemon_options['umask']:
+            daemon_kwargs['umask'] = int(daemon_options['umask'])
         
         become_daemon(our_home_dir = daemon_options["workdir"], **daemon_kwargs)
         

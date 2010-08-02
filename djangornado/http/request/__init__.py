@@ -8,11 +8,9 @@ class DjangornadoRequest(object):
         except:
             pass
     
-    def __getattribute__(self, attr):
+    def __getattr__(self, attr):
         if hasattr(self.handler, attr):
             return getattr(self.handler, attr)
-        elif hasattr(self, attr):
-            return getattr(self, attr)
         return self
     
     def get(self, key, default = None):

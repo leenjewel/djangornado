@@ -24,7 +24,9 @@ class LazySettings(dict):
         super(LazySettings, self).__init__(self.settings_dict.items())
     
     def __getattr__(self, attr):
-        return self.get(attr)
+        if self.has_key(attr):
+            return self.get(attr)
+        raise AttributeError("%s instance has no attribute '%s'" %(self.__class__.__name__, attr))
 
 settings = LazySettings()
 

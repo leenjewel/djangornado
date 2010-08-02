@@ -49,7 +49,7 @@ class Command(BaseCommand):
             try:
                 application = tornado.web.Application([('^/(.*)$', DjangornadoHandler),], **settings)
                 http_server = tornado.httpserver.HTTPServer(application)
-                http_server.listen(int(int(port), addr))
+                http_server.listen(int(port), addr)
                 tornado.ioloop.IOLoop.instance().start()
             except Exception, e:
                 sys.stderr.write("Error: %s \n" % str(e))
