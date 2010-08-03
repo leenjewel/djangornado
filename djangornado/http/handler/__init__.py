@@ -11,10 +11,10 @@ from djangornado.middleware import middleware
 
 class DjangornadoHandler(RequestHandler):
     def _execute(self, transforms, *args, **kwargs):
-        self._rk_request = DjangornadoRequest(self, *args, **kwargs)
+        self._dt_request = DjangornadoRequest(self, *args, **kwargs)
         try:
             for processer in middleware.request_middleware:
-                response = processer(self._rk_request)
+                response = processer(self._dt_request)
                 if response:
                     self._render_response(response)
         except Exception, e:
@@ -24,13 +24,13 @@ class DjangornadoHandler(RequestHandler):
     def finish(self, chunk = None):
         try:
             for processer in middleware.response_middleware:
-                processer(self._rk_request)
+                processer(self._dt_request)
         except Exception, e:
             self._handle_request_exception(e)
         super(DjangornadoHandler, self).finish(chunk)
 
     def get_from_urls(self, pattern):
-        is_asyn = self._rk_request.get_argument("asyn", False)
+        is_asyn = self._dt_request.get_argument("asyn", False)
         callback = urlpatterns.callback(pattern)
         if callback:
             return callback, is_asyn
@@ -57,4 +57,4 @@ class DjangornadoHandler(RequestHandler):
     def get(self, pattern):
         callback_func, asyn = self.get_from_urls(pattern)
         if callback_func:
-            (self._asyn_call if asyn else self._syn_call)(callback_func, self._rk_request)
+            (self._asyn_call if asyn else self._syn_call)(callback_func, self._dt_request)

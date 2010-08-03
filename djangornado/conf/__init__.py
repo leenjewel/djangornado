@@ -13,11 +13,9 @@ class LazySettings(dict):
     def __init__(self):
         try:
             settings_path = os.environ[ENVIRONMENT_VARIABLE]
-            if not settings_path: # If it's set but is an empty string.
+            if not settings_path:
                 raise KeyError
         except KeyError:
-            # NOTE: This is arguably an EnvironmentError, but that causes
-            # problems with Python's interactive help.
             raise ImportError('No settings file path given, because environment variable %s is undefined.' % ENVIRONMENT_VARIABLE)
         self.settings_module = import_module(settings_path)
         self.settings_dict = self.settings_module.__dict__
@@ -41,21 +39,14 @@ class LazyUrls(object):
 
     def _callback_from_patterns(self, urlpatterns, pattern, regex = None):
         for u in urlpatterns:
-            if isinstance(u, RegexURLPattern):
-                if regex:
-                    p_pattern = u.regex.pattern
-                    if p_pattern.startswith('^'):
-                        p_pattern = p_pattern[1:]
-                    if re.match(regex+p_pattern, pattern):
-                        return u.callback
-                elif u.regex.match(pattern):
-                    return u.callback
-            elif isinstance(u, RegexURLResolver):
-                p_pattern = u.regex.pattern
-                if p_pattern.startswith('^'):
-                    p_pattern = p_pattern[1:]
-                if pattern.startswith(p_pattern):
-                    return self._callback_from_patterns(u.urlpatterns, pattern, u.regex.pattern)
+            p_pattern = u.regex.pattern
+            if regex:
+                if p_pattern.startswith("^"):
+                    p_pattern = regex + p_pattern[1:]
+            if isinstance(u, RegexURLPattern) and re.match(p_pattern, pattern):
+                return u.callback
+            elif isinstance(u, RegexURLResolver) and pattern.startswith(p_pattern[1:]):
+                return self._callback_from_patterns(u.urlpatterns, pattern, p_pattern)
         return None
     
     def callback(self, pattern):
