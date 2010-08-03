@@ -27,7 +27,9 @@ ROOT_URLCONF = 'apps.urls'
 template_path = BASEROOT + "/apps/templates"
 
 SESSION_COOKIE_SECURE = True
+cookie_secret = ''
 SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_NAME = 'sessionid'
 SESSION_COOKIE_DOMAIN = None
 SESSION_ENGINE = 'libs.ttsession.tokyo'

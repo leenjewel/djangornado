@@ -41,6 +41,8 @@ class Command(LabelCommand):
         settings_contents = open(main_settings_file, 'r').read()
         fp = open(main_settings_file, 'w')
         secret_key = ''.join([choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+        cookie_secret = ''.join([choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
         settings_contents = re.sub(r"(?<=SECRET_KEY = ')'", secret_key + "'", settings_contents)
+        settings_contents = re.sub(r"(?<=cookie_secret = ')'", cookie_secret + "'", settings_contents)
         fp.write(settings_contents)
         fp.close()
