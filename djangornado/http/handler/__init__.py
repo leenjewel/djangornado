@@ -17,6 +17,7 @@ class DjangornadoHandler(RequestHandler):
                 response = processer(self._dt_request)
                 if response:
                     self._render_response(response)
+                    self.finish()
         except Exception, e:
             self._handle_request_exception(e)
         super(DjangornadoHandler, self)._execute(transforms, *args, **kwargs)
