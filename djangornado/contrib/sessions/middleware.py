@@ -12,9 +12,9 @@ class SessionMiddleware(object):
     def process_request(self, request):
         engine = import_module(settings.SESSION_ENGINE)
         if settings.SESSION_COOKIE_SECURE:
-            session_key = self.get_secure_cookie(settings.SESSION_COOKIE_NAME)
+            session_key = request.get_secure_cookie(settings.SESSION_COOKIE_NAME)
         else:
-            session_key = self.get_cookie(settings.SESSION_COOKIE_NAME)
+            session_key = request.get_cookie(settings.SESSION_COOKIE_NAME)
         request.session = engine.SessionStore(session_key)
     
     def process_response(self, request):
