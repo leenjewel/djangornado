@@ -19,3 +19,6 @@ class DjangornadoRequest(object):
     
     def get(self, key, default = None):
         return self.handler.get_argument(key, default)
+    
+    def getlist(self, key, strip=True):
+        return self.handler.get_arguments(key, strip)
