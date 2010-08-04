@@ -59,3 +59,6 @@ class DjangornadoHandler(RequestHandler):
         callback_func, asyn = self.get_from_urls(pattern)
         if callback_func:
             (self._asyn_call if asyn else self._syn_call)(callback_func, self._dt_request)
+    
+    def post(self, pattern):
+        self.get(pattern)

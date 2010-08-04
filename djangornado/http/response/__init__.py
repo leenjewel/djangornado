@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import simplejson as json
+from tornado.escape import json_encode
 from djangornado.conf import settings
 from djangornado.utils.importlib import import_module
 from djangornado.core.exceptions import ImproperlyConfigured
