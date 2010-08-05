@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
 
-import simplejson as json
-from tornado.web import HTTPError
 from tornado.escape import json_encode
 from djangornado.conf import settings
 from djangornado.utils.importlib import import_module
@@ -13,13 +11,13 @@ class BaseResponse(object):
     def return_response(self, handler):
         if isinstance(self, JsonResponse):
             handler.set_header("Content-Type", "application/x-javascript")
-        if isinstance(self, RenderResponse) and isinstance(self.response_data, dict):
+            handler.write(json_encode(self.response_data))
+        elif isinstance(self, RenderResponse) and isinstance(self.response_data, dict):
             handler.render(self.response_data.get("template"), **self.response_data.get("context", {}))
         else:
             if not isinstance(self.response_data, basestring):
                 self.response_data = str(self.response_data)
             handler.write(self.response_data)
-        raise HTTPError(405)
 
 class RenderResponse(BaseResponse):
     def __init__(self, template, context = {}, request_context = None):
