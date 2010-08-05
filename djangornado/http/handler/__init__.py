@@ -6,7 +6,6 @@ from tornado.web import asynchronous
 from djangornado.http.request import DjangornadoRequest
 from djangornado.utils.importlib import import_module
 from djangornado.conf import settings, urlpatterns
-from djangornado.http.response import RenderResponse
 from djangornado.middleware import middleware
 
 class DjangornadoHandler(RequestHandler):
@@ -50,10 +49,7 @@ class DjangornadoHandler(RequestHandler):
         self.finish()
     
     def _render_response(self, response):
-        if isinstance(response, RenderResponse):
-            self.render(response.template, **response.context)
-        else:
-            self.write(str(response))
+        response.return_response(self)
     
     def get(self, pattern):
         callback_func, asyn = self.get_from_urls(pattern)
