@@ -47,15 +47,21 @@ class HttpResponse(BaseResponse):
         self.response_data = response
     
     def __str__(self):
-        if isinstance(self.response, unicode):
-            self.response = self.response.encode("utf-8")
-        if not isinstance(self.response, str):
-            self.response = str(self.response)
-        return self.response
+        if isinstance(self.response_data, unicode):
+            self.response_data = self.response_data.encode("utf-8")
+        if not isinstance(self.response_data, str):
+            self.response_data = str(self.response_data)
+        return self.response_data
+    
+    def __repr__(self):
+        return self.response_data
 
 class JsonResponse(BaseResponse):
     def __init__(self, response):
         self.response_data = response
     
     def __str__(self):
-        return json.dumps(self.response, indent = 4)
+        return json_encode(self.response_data)
+    
+    def __repr__(self):
+        return self.response_data
