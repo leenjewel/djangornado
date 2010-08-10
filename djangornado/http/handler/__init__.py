@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import traceback
 from tornado.web import HTTPError
 from tornado.web import RequestHandler
 from tornado.web import asynchronous
@@ -9,6 +10,15 @@ from djangornado.conf import settings, urlpatterns
 from djangornado.middleware import middleware
 
 class DjangornadoHandler(RequestHandler):
+    def _handle_request_exception(self, e):
+        exstr = traceback.format_exc()
+        self.write("""
+            <p><h2>Djangornado Error</h2></p>
+            <p>Error Msg:</p><p>%s</p><br>
+            <p>Error:</p>
+            <div>%s</div>
+        """ %(str(e), str(exstr).replace("\n", "<br>")))
+    
     def _execute(self, transforms, *args, **kwargs):
         self._dt_request = DjangornadoRequest(self, *args, **kwargs)
         try:
