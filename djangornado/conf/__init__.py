@@ -20,6 +20,14 @@ class LazySettings(dict):
         self.settings_module = import_module(settings_path)
         self.settings_dict = self.settings_module.__dict__
         super(LazySettings, self).__init__(self.settings_dict.items())
+        self.initialize()
+    
+    def initialize(self):
+        self["debug"] = False
+        if self.has_key("DEBUG"):
+            self["debug"] = self["DEBUG"]
+        if self.has_key("TEMPLATE_DIRS"):
+            self["template_path"] = self["TEMPLATE_DIRS"]
     
     def __getattr__(self, attr):
         if self.has_key(attr):

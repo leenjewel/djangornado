@@ -46,9 +46,7 @@ class DjangornadoHandler(RequestHandler):
     def get_from_urls(self, pattern):
         is_asyn = self._dt_request.get_argument("asyn", False)
         callback = urlpatterns.callback(pattern)
-        if callback:
-            return callback, is_asyn
-        raise HTTPError(404)
+        return callback, is_asyn
     
     def _syn_call(self, callback_func, request):
         self._render_response(callback_func(request))
@@ -72,8 +70,9 @@ class DjangornadoHandler(RequestHandler):
     
     def get(self, pattern):
         callback_func, asyn = self.get_from_urls(pattern)
-        if callback_func:
-            (self._asyn_call if asyn else self._syn_call)(callback_func, self._dt_request)
+        if callback_func is None:
+            raise HTTPError(404)
+        (self._asyn_call if asyn else self._syn_call)(callback_func, self._dt_request)
     
     def post(self, pattern):
         self.get(pattern)
