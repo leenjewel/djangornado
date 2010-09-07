@@ -61,3 +61,6 @@ class NoSaveModeSignedError(Exception):
 
 class ModelKeyMissedError(Exception):
     pass
+
+class NoReturnResponseError(Exception):
+    pass

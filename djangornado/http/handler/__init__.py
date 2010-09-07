@@ -4,6 +4,7 @@ import traceback
 from tornado.web import HTTPError
 from tornado.web import RequestHandler
 from tornado.web import asynchronous
+from djangornado.core.exceptions import NoReturnResponseError
 from djangornado.http.request import DjangornadoRequest
 from djangornado.utils.importlib import import_module
 from djangornado.conf import settings, urlpatterns
@@ -11,13 +12,16 @@ from djangornado.middleware import middleware
 
 class DjangornadoHandler(RequestHandler):
     def _handle_request_exception(self, e):
-        exstr = traceback.format_exc()
-        self.write("""
-            <p><h2>Djangornado Error</h2></p>
-            <p>Error Msg:</p><p>%s</p><br>
-            <p>Error:</p>
-            <div>%s</div>
-        """ %(str(e), str(exstr).replace("\n", "<br>")))
+        if settings.has_key("DEBUG") and settings.DEBUG is True:
+            exstr = traceback.format_exc()
+            self.write("""
+                <p><h2>Djangornado Error</h2></p>
+                <p>Error Msg:</p><p>%s</p><br>
+                <p>Error:</p>
+                <div>%s</div>
+            """ %(str(e), str(exstr).replace("\n", "<br>")))
+        else:
+            raise HTTPError(500)
     
     def _execute(self, transforms, *args, **kwargs):
         self._dt_request = DjangornadoRequest(self, *args, **kwargs)
@@ -59,7 +63,12 @@ class DjangornadoHandler(RequestHandler):
         self.finish()
     
     def _render_response(self, response):
-        response.return_response(self)
+        try:
+            if response is None:
+                raise NoReturnResponseError("No response return")
+            response.return_response(self)
+        except Exception,e:
+            self._handle_request_exception(e)
     
     def get(self, pattern):
         callback_func, asyn = self.get_from_urls(pattern)
