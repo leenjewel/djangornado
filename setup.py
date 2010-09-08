@@ -52,7 +52,7 @@ if u'SVN' in version:
 setup(
     name = "Djangornado",
     version = version.replace(' ', '-'),
-    url = 'http://src.rekoo.com/',
+    url = 'http://leenjewel.blog.163.com/',
     author = 'Leen Jewel',
     author_email = 'leenjewel@gmail.com',
     description = 'Extension for tornado.',
