@@ -1,0 +1,4 @@
+该 web server 基于 tornado web server 开发，
+其目的是将 django 的开发特性和开发过程引入 tornado,
+让 tornado 的开发流程看起来和 django 更为相似，
+让更多的基于 django 开发应用和 web 程序的开发者“无痛”迁移到 tornado 上来 :-)
