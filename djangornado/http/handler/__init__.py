@@ -12,7 +12,9 @@ from djangornado.middleware import middleware
 
 class DjangornadoHandler(RequestHandler):
     def _handle_request_exception(self, e):
-        if settings.has_key("DEBUG") and settings.DEBUG is True:
+        if isinstance(e, HTTPError):
+            super(DjangornadoHandler, self)._handle_request_exception(e)
+        elif settings.has_key("DEBUG") and settings.DEBUG is True:
             exstr = traceback.format_exc()
             self.write("""
                 <p><h2>Djangornado Error</h2></p>

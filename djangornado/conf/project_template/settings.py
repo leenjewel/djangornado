@@ -22,9 +22,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 )
 
-ROOT_URLCONF = 'apps.urls'
+ROOT_URLCONF = 'urls'
 
-template_path = BASEROOT + "/apps/templates"
+template_path = BASEROOT + "/templates"
 
 SESSION_COOKIE_SECURE = True
 cookie_secret = ''
@@ -32,4 +32,4 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_NAME = 'sessionid'
 SESSION_COOKIE_DOMAIN = None
-SESSION_ENGINE = 'libs.ttsession.tokyo'
+SESSION_ENGINE = ''
