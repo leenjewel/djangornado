@@ -9,6 +9,16 @@ __all__ = ['settings', 'urls']
 
 ENVIRONMENT_VARIABLE = 'DJANGORNADO_SETTINGS_MODULE'
 
+_DEFAULT_SETTINGS = {
+    "SESSION_COOKIE_SECURE":False,
+    "cookie_secret":'',
+    "SESSION_SAVE_EVERY_REQUEST":False,
+    "SESSION_EXPIRE_AT_BROWSER_CLOSE":False,
+    "SESSION_COOKIE_NAME":None,
+    "SESSION_COOKIE_DOMAIN":None,
+    "SESSION_ENGINE":"djangornado.contrib.sessions.backrends.file",
+}
+
 class LazySettings(dict):
     def __init__(self):
         try:
@@ -19,7 +29,8 @@ class LazySettings(dict):
             raise ImportError('No settings file path given, because environment variable %s is undefined.' % ENVIRONMENT_VARIABLE)
         self.settings_module = import_module(settings_path)
         self.settings_dict = self.settings_module.__dict__
-        super(LazySettings, self).__init__(self.settings_dict.items())
+        super(LazySettings, self).__init__(_DEFAULT_SETTINGS.items())
+        self.update(self.settings_dict.items())
         self.initialize()
     
     def initialize(self):

@@ -15,7 +15,7 @@ MEDIA_URL = BASEURL+"/static"
 SECRET_KEY = ''
 
 MIDDLEWARE_CLASSES = (
-#    'djangornado.contrib.sessions.middleware.SessionMiddleware'
+    'djangornado.contrib.sessions.middleware.SessionMiddleware'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -24,12 +24,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 ROOT_URLCONF = 'urls'
 
-template_path = BASEROOT + "/templates"
+TEMPLATE_DIRS = BASEROOT + "/templates"
 
-SESSION_COOKIE_SECURE = True
-cookie_secret = ''
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_NAME = 'sessionid'
-SESSION_COOKIE_DOMAIN = None
-SESSION_ENGINE = ''
