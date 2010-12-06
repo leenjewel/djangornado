@@ -40,8 +40,8 @@ Optional settings: (setting=value)
         'umask': None,
     }
     
-    help = "Runs this project as a FastCGI application. Requires flup."
-    args = '[various KEY=val options, use `runfcgi help` for help]'
+    help = "Runs this project as a FastCGI application."
+    args = '[various KEY=val options, use `rundaemon help` for help]'
 
     def handle(self, *args, **options):
         daemon_options = self.DAEMON_OPTIONS.copy()
