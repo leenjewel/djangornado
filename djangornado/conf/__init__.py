@@ -16,7 +16,8 @@ _DEFAULT_SETTINGS = {
     "SESSION_EXPIRE_AT_BROWSER_CLOSE":False,
     "SESSION_COOKIE_NAME":None,
     "SESSION_COOKIE_DOMAIN":None,
-    "SESSION_ENGINE":"djangornado.contrib.sessions.backrends.file",
+    "SESSION_ENGINE":"djangornado.contrib.sessions.backends.file",
+    "SESSION_COOKIE_AGE":3600,
 }
 
 class LazySettings(dict):
