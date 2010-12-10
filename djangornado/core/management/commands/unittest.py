@@ -25,7 +25,11 @@ class UnitTestRequest(object):
         url = urllist[0]
         urlparams = {}
         if len(urllist) == 2:
-            urlparams = dict([(key, value) for key, value in [kv.split("=") for kv in urllist[1].split("&")]])
+            for key, value in [kv.split("=") for kv in urllist[1].split("&")]:
+                if urlparams.has_key(key):
+                    urlparams[key] = [urlparams[key]]
+                    urlparams[key].append(value)
+                urlparams[key] = value
         return url, urlparams
     
     def __getattr__(self, attr):
@@ -48,6 +52,15 @@ class UnitTestRequest(object):
     def set_secure_cookie(self, cookie_name, cookie_value, *args, **kwargs):
         self.set_cookie(cookie_name, cookie_value, *args, **kwargs)
     
+    def get(self, key, default_value = None):
+        return self.cookie_params.get(key, default_value) or self.urlparams.get(key, default_value)
+    
+    def getlist(self, key):
+        return_list = self.urlparams.get(key)
+        if isinstance(return_list, (list, tuple)):
+            return return_list
+        return []
+    
     def get_url_path(self):
         urllist = self.url.split("/")
         urlpath = ""
@@ -56,7 +69,7 @@ class UnitTestRequest(object):
             if "." in urllist[urlindex]:
                 break
             if urllist[urlindex]:
-                urlpath += urllist[urlindex] + "/"
+                urlpath = urllist[urlindex] + "/" + urlpath
             urlindex -= 1
         if self.url[-1] != "/":
             urlpath = urlpath[:-1]
