@@ -73,7 +73,7 @@ class RegexURLPattern(object):
         self.default_args = default_args or {}
 
     def __repr__(self):
-        return '<%s %s %s>' % (self.__class__.__name__, self.name, self.regex.pattern)
+        return '<%s %s>' % (self.__class__.__name__, self.regex.pattern)
 
     def add_prefix(self, prefix):
         if not prefix or not hasattr(self, '_callback_str'):

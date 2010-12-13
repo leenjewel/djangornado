@@ -56,6 +56,7 @@ class LazyUrls(object):
         if not hasattr(urls, "urlpatterns"):
             raise ImportError('urlpatterns in urls is underfined.')
         self._urlpatterns = getattr(urls, "urlpatterns", [])
+        self.url_map = []
 
     def _callback_from_patterns(self, urlpatterns, pattern, regex = None):
         for u in urlpatterns:
@@ -69,8 +70,26 @@ class LazyUrls(object):
                 return self._callback_from_patterns(u.urlpatterns, pattern, p_pattern)
         return None
     
+    def _create_url_map(self, urlpatterns = None, regex = ""):
+        from djangornado.http.handler import DjangornadoHandler
+        if urlpatterns is None:
+            urlpatterns = self._urlpatterns
+        for u in urlpatterns:
+            p_pattern = u.regex.pattern
+            if p_pattern.startswith("^"):
+                p_pattern = regex + p_pattern[1:]
+            if isinstance(u, RegexURLPattern):
+                if p_pattern.startswith("/") is False:
+                    p_pattern = "/" + p_pattern
+                self.url_map.append(("^" + p_pattern, DjangornadoHandler, {"callback":u.callback}))
+            elif isinstance(u, RegexURLResolver):
+                self._create_url_map(u.urlpatterns, p_pattern)
+        return self.url_map
+    
     def callback(self, pattern):
         return self._callback_from_patterns(self._urlpatterns, pattern)
+    
+    urlmap = property(_create_url_map)
                 
 
 urlpatterns = LazyUrls()
