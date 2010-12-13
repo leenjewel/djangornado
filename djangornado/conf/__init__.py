@@ -92,4 +92,4 @@ class LazyUrls(object):
     urlmap = property(_create_url_map)
                 
 
-urlpatterns = LazyUrls()
+urls = LazyUrls()

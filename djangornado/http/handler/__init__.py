@@ -7,7 +7,7 @@ from tornado.web import asynchronous
 from djangornado.core.exceptions import NoReturnResponseError
 from djangornado.http.request import DjangornadoRequest
 from djangornado.utils.importlib import import_module
-from djangornado.conf import settings, urlpatterns
+from djangornado.conf import settings, urls
 from djangornado.middleware import middleware
 
 class DjangornadoHandler(RequestHandler):
@@ -49,11 +49,6 @@ class DjangornadoHandler(RequestHandler):
             self._handle_request_exception(e)
         super(DjangornadoHandler, self).finish(chunk)
 
-    def get_from_urls(self, pattern):
-        is_asyn = self._dt_request.get_argument("asyn", False)
-        callback = urlpatterns.callback(pattern)
-        return callback, is_asyn
-    
     def _syn_call(self, callback_func, request):
         self._render_response(callback_func(request))
 

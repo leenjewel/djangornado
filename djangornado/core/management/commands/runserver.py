@@ -41,13 +41,13 @@ class Command(BaseCommand):
 
         def inner_run():
             from djangornado.conf import settings
-            from djangornado.conf import urlpatterns
+            from djangornado.conf import urls
             print "\nDjangornado version %s" % (djangornado.get_version())
             print "Development server is running at http://%s:%s/" % (addr, port)
             print "Quit the server with %s." % quit_command
 
             try:
-                application = tornado.web.Application(urlpatterns.urlmap, **settings)
+                application = tornado.web.Application(urls.urlmap, **settings)
                 http_server = tornado.httpserver.HTTPServer(application)
                 http_server.listen(int(port), addr)
                 tornado.ioloop.IOLoop.instance().start()

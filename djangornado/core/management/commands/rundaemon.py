@@ -126,8 +126,8 @@ Optional settings: (setting=value)
 
         try:
             from djangornado.conf import settings
-            from djangornado.conf import urlpatterns
-            application = tornado.web.Application(urlpatterns.urlmap, **settings)
+            from djangornado.conf import urls
+            application = tornado.web.Application(urls.urlmap, **settings)
             http_server = tornado.httpserver.HTTPServer(application)
             if daemon_options["method"] == "prefork":
                 http_server.bind(int(daemon_options.get("port", 8000)), daemon_options.get("host", "127.0.0.1"))

@@ -8,7 +8,7 @@ Created on 2010-12-3
 import os, re, code
 from djangornado.core.management.base import NoArgsCommand
 from djangornado.middleware import middleware
-from djangornado.conf import urlpatterns
+from djangornado.conf import urls
 from optparse import make_option
 
 class UnitTestRequest(object):
@@ -80,7 +80,7 @@ class UnitTestRequest(object):
         self.urlpath = self.get_url_path()
         if self.runmiddleware:
             self.run_middleware()
-        callback_func = urlpatterns.callback(self.urlpath)
+        callback_func = urls.callback(self.urlpath)
         if callback_func is None:
             return "HTTP(404)"
         url_result = callback_func(self)
