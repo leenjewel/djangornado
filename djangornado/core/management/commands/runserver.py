@@ -40,14 +40,14 @@ class Command(BaseCommand):
         quit_command = (sys.platform == 'win32') and 'CTRL-BREAK' or 'CONTROL-C'
 
         def inner_run():
-            from djangornado.conf import settings
-            from djangornado.conf import urls
+            from djangornado.conf import settings, urls
+            from djangornado.http.handler import DjangornadoHandler
             print "\nDjangornado version %s" % (djangornado.get_version())
             print "Development server is running at http://%s:%s/" % (addr, port)
             print "Quit the server with %s." % quit_command
 
             try:
-                application = tornado.web.Application(urls.urlmap, **settings)
+                application = tornado.web.Application([(r"^/(.*)$", DjangornadoHandler)], **settings)
                 http_server = tornado.httpserver.HTTPServer(application)
                 http_server.listen(int(port), addr)
                 tornado.ioloop.IOLoop.instance().start()

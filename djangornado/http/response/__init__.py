@@ -1,23 +1,18 @@
 # -*- coding:utf-8 -*-
 
+import tornado
 from tornado.escape import json_encode
+from tornado.web import asynchronous
 from djangornado.conf import settings
 from djangornado.utils.importlib import import_module
 from djangornado.core.exceptions import ImproperlyConfigured
+from djangornado.core.exceptions import NoReturnResponseError
 
 class BaseResponse(object):
     response_data = None
 
     def return_response(self, handler):
-        if isinstance(self, JsonResponse):
-            handler.set_header("Content-Type", "application/x-javascript")
-            handler.write(json_encode(self.response_data))
-        elif isinstance(self, RenderResponse) and isinstance(self.response_data, dict):
-            handler.render(self.response_data.get("template"), **self.response_data.get("context", {}))
-        else:
-            if not isinstance(self.response_data, basestring):
-                self.response_data = str(self.response_data)
-            handler.write(self.response_data)
+        raise NoReturnResponseError("No response return")
 
 class RenderResponse(BaseResponse):
     def __init__(self, template, context = {}, request_context = None):
@@ -41,6 +36,11 @@ class RenderResponse(BaseResponse):
                     raise ImproperlyConfigured('Module "%s" does not define a "%s" callable request processor' % (module, attr))
                 self.response_data["context"].update(func())
         return None
+    
+    def return_response(self, handler):
+        if isinstance(self.response_data, dict):
+            handler.render(self.response_data.get("template"), **self.response_data.get("context", {}))
+        handler.write(self.response_data)
 
 class HttpResponse(BaseResponse):
     def __init__(self, response):
@@ -55,6 +55,11 @@ class HttpResponse(BaseResponse):
     
     def __repr__(self):
         return self.response_data
+    
+    def return_response(self, handler):
+        if not isinstance(self.response_data, basestring):
+                self.response_data = str(self.response_data)
+        handler.write(self.response_data)
 
 class JsonResponse(BaseResponse):
     def __init__(self, response):
@@ -65,3 +70,14 @@ class JsonResponse(BaseResponse):
     
     def __repr__(self):
         return self.response_data
+    
+    def return_response(self, handler):
+        handler.set_header("Content-Type", "application/x-javascript")
+        handler.write(json_encode(self.response_data))
+
+class HttpResponseRedirect(BaseResponse):
+    def __init__(self, url):
+        self.url = url
+
+    def return_response(self, handler):
+        handler.redirect(self.url)

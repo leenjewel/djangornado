@@ -11,10 +11,7 @@ from djangornado.conf import settings, urls
 from djangornado.middleware import middleware
 
 class DjangornadoHandler(RequestHandler):
-    
-    def initialize(self, callback):
-        self.callback = callback
-    
+
     def _handle_request_exception(self, e):
         if isinstance(e, HTTPError):
             super(DjangornadoHandler, self)._handle_request_exception(e)
@@ -48,6 +45,11 @@ class DjangornadoHandler(RequestHandler):
         except Exception, e:
             self._handle_request_exception(e)
         super(DjangornadoHandler, self).finish(chunk)
+    
+    def get_from_urls(self, pattern):
+        asyn = self.get_argument("asyn", False)
+        callback = urls.callback(pattern)
+        return callback, asyn
 
     def _syn_call(self, callback_func, request):
         self._render_response(callback_func(request))
@@ -69,9 +71,11 @@ class DjangornadoHandler(RequestHandler):
         except Exception,e:
             self._handle_request_exception(e)
     
-    def get(self):
-        asyn = self.get_argument("asyn", False)
-        (self._asyn_call if asyn else self._syn_call)(self.callback, self._dt_request)
+    def get(self, pattern):
+        callback, asyn = self.get_from_urls(pattern)
+        if callback is None:
+            raise HTTPError(404)
+        (self._asyn_call if asyn else self._syn_call)(callback, self._dt_request)
     
-    def post(self):
-        self.get()
+    def post(self, pattern):
+        self.get(pattern)
