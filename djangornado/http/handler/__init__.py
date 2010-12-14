@@ -64,18 +64,18 @@ class DjangornadoHandler(RequestHandler):
         self.finish()
     
     def _render_response(self, response):
-        try:
-            if response is None:
-                raise NoReturnResponseError("No response return")
-            response.return_response(self)
-        except Exception,e:
-            self._handle_request_exception(e)
+        if response is None:
+            raise NoReturnResponseError("No response return")
+        response.return_response(self)
     
     def get(self, pattern):
-        callback, asyn = self.get_from_urls(pattern)
-        if callback is None:
-            raise HTTPError(404)
-        (self._asyn_call if asyn else self._syn_call)(callback, self._dt_request)
+        try:
+            callback, asyn = self.get_from_urls(pattern)
+            if callback is None:
+                raise HTTPError(404)
+            (self._asyn_call if asyn else self._syn_call)(callback, self._dt_request)
+        except Exception, e:
+            self._handle_request_exception(e)
     
     def post(self, pattern):
         self.get(pattern)
