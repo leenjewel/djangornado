@@ -6,6 +6,7 @@ from tornado.web import RequestHandler
 from tornado.web import asynchronous
 from djangornado.core.exceptions import NoReturnResponseError
 from djangornado.http.request import DjangornadoRequest
+from djangornado.http.response import BaseResponse
 from djangornado.utils.importlib import import_module
 from djangornado.conf import settings, urls
 from djangornado.middleware import middleware
@@ -23,6 +24,7 @@ class DjangornadoHandler(RequestHandler):
                 <p>Error:</p>
                 <div>%s</div>
             """ %(str(e), str(exstr).replace("\n", "<br>")))
+            self.finish()
         else:
             raise HTTPError(500)
     
@@ -31,19 +33,16 @@ class DjangornadoHandler(RequestHandler):
         try:
             for processer in middleware.request_middleware:
                 response = processer(self._dt_request)
-                if response:
+                if response and isinstance(response, BaseResponse):
                     self._render_response(response)
-                    self.finish()
+                    return self.finish()
+            super(DjangornadoHandler, self)._execute(transforms, *args, **kwargs)
         except Exception, e:
-            self._handle_request_exception(e)
-        super(DjangornadoHandler, self)._execute(transforms, *args, **kwargs)
-    
+            return self._handle_request_exception(e)
+
     def finish(self, chunk = None):
-        try:
-            for processer in middleware.response_middleware:
-                processer(self._dt_request)
-        except Exception, e:
-            self._handle_request_exception(e)
+        for processer in middleware.response_middleware:
+            processer(self._dt_request)
         super(DjangornadoHandler, self).finish(chunk)
     
     def get_from_urls(self, pattern):
@@ -69,13 +68,10 @@ class DjangornadoHandler(RequestHandler):
         response.return_response(self)
     
     def get(self, pattern):
-        try:
-            callback, asyn = self.get_from_urls(pattern)
-            if callback is None:
-                raise HTTPError(404)
-            (self._asyn_call if asyn else self._syn_call)(callback, self._dt_request)
-        except Exception, e:
-            self._handle_request_exception(e)
-    
+        callback, asyn = self.get_from_urls(pattern)
+        if callback is None:
+            raise HTTPError(404)
+        (self._asyn_call if asyn else self._syn_call)(callback, self._dt_request)
+
     def post(self, pattern):
         self.get(pattern)

@@ -2,7 +2,6 @@
 
 import tornado
 from tornado.escape import json_encode
-from tornado.web import asynchronous
 from djangornado.conf import settings
 from djangornado.utils.importlib import import_module
 from djangornado.core.exceptions import ImproperlyConfigured
@@ -40,7 +39,6 @@ class RenderResponse(BaseResponse):
     def return_response(self, handler):
         if isinstance(self.response_data, dict):
             handler.render(self.response_data.get("template"), **self.response_data.get("context", {}))
-        handler.write(self.response_data)
 
 class HttpResponse(BaseResponse):
     def __init__(self, response):
@@ -58,7 +56,7 @@ class HttpResponse(BaseResponse):
     
     def return_response(self, handler):
         if not isinstance(self.response_data, basestring):
-                self.response_data = str(self.response_data)
+            self.response_data = str(self.response_data)
         handler.write(self.response_data)
 
 class JsonResponse(BaseResponse):
