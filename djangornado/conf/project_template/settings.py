@@ -15,7 +15,7 @@ MEDIA_URL = BASEURL+"/static"
 SECRET_KEY = ''
 
 MIDDLEWARE_CLASSES = (
-    'djangornado.contrib.sessions.middleware.SessionMiddleware'
+    'djangornado.contrib.sessions.middleware.SessionMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

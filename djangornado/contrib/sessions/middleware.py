@@ -25,18 +25,18 @@ class SessionMiddleware(object):
         else:
             if modified or settings.SESSION_SAVE_EVERY_REQUEST:
                 if request.session.get_expire_at_browser_close():
-                    expires_days = None
+                    expires = None
                 else:
-                    expires_days = request.session.get_expires_days()
+                    expires = request.session.get_expiry_age()
                 # Save the session data and refresh the client cookie.
                 request.session.save()
                 if settings.SESSION_COOKIE_SECURE:
                     request.set_secure_cookie(settings.SESSION_COOKIE_NAME,
-                            request.session.session_key, expires_days = expires_days,
+                            request.session.session_key, expires = expires,
                             domain = settings.SESSION_COOKIE_DOMAIN,
                             path = "/")
                 else:
                     request.set_cookie(settings.SESSION_COOKIE_NAME,
-                            request.session.session_key, expires_days = expires_days,
+                            request.session.session_key, expires = expires,
                             domain = settings.SESSION_COOKIE_DOMAIN,
                             path = "/")
