@@ -27,7 +27,7 @@ class SessionMiddleware(object):
                 if request.session.get_expire_at_browser_close():
                     expires = None
                 else:
-                    expires = request.session.get_expiry_age()
+                    expires = request.session.get_expiry_date()
                 # Save the session data and refresh the client cookie.
                 request.session.save()
                 if settings.SESSION_COOKIE_SECURE:
