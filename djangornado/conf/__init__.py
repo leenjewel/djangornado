@@ -68,7 +68,7 @@ class LazyUrls(object):
                 return u.resolve(pattern)
             elif isinstance(u, RegexURLResolver) and pattern.startswith(p_pattern[1:]):
                 return self._callback_from_patterns(u.urlpatterns, pattern, p_pattern)
-        return None
+        return None, None, None
     
     def _create_url_map(self, urlpatterns = None, regex = ""):
         from djangornado.http.handler import DjangornadoHandler
