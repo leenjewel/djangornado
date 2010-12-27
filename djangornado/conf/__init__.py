@@ -65,7 +65,7 @@ class LazyUrls(object):
                 if p_pattern.startswith("^"):
                     p_pattern = regex + p_pattern[1:]
             if isinstance(u, RegexURLPattern) and re.match(p_pattern, pattern):
-                return u.callback
+                return u.resolve()
             elif isinstance(u, RegexURLResolver) and pattern.startswith(p_pattern[1:]):
                 return self._callback_from_patterns(u.urlpatterns, pattern, p_pattern)
         return None
@@ -81,7 +81,9 @@ class LazyUrls(object):
             if isinstance(u, RegexURLPattern):
                 if p_pattern.startswith("/") is False:
                     p_pattern = "/" + p_pattern
-                self.url_map.append(("^" + p_pattern, DjangornadoHandler, {"callback":u.callback}))
+                handler_dict = {}
+                handler_dict["callback"], handler_dict["args"], handler_dict["kwargs"] = u.resolve()
+                self.url_map.append(("^" + p_pattern, DjangornadoHandler, handler_dict))
             elif isinstance(u, RegexURLResolver):
                 self._create_url_map(u.urlpatterns, p_pattern)
         return self.url_map

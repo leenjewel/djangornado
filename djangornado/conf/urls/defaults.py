@@ -19,13 +19,13 @@ def patterns(prefix, *args):
     pattern_list = []
     for t in args:
         if isinstance(t, (list, tuple)):
-            t = url(prefix=prefix, *t)
+            t = url(prefix = prefix, *t)
         elif isinstance(t, RegexURLPattern):
             t.add_prefix(prefix)
         pattern_list.append(t)
     return pattern_list
 
-def url(regex, view, prefix = ''):
+def url(regex, view, default_args = None, prefix = ''):
     if isinstance(view, RegexURLResolver):
         view.set_regex(regex)
         return view
@@ -34,4 +34,4 @@ def url(regex, view, prefix = ''):
             raise ImproperlyConfigured('Empty URL pattern view name not permitted (for pattern %r)' % regex)
         if prefix:
             view = prefix + '.' + view
-    return RegexURLPattern(regex, view)
+    return RegexURLPattern(regex, view, default_args)

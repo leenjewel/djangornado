@@ -63,7 +63,7 @@ class RegexURLResolver(object):
     urlpatterns = property(_get_url_patterns)
 
 class RegexURLPattern(object):
-    def __init__(self, regex, callback, default_args=None):
+    def __init__(self, regex, callback, default_args = None):
         self.regex = re.compile(regex, re.UNICODE)
         if callable(callback):
             self._callback = callback
@@ -80,6 +80,17 @@ class RegexURLPattern(object):
             return
         self._callback_str = prefix + '.' + self._callback_str
 
+    def resolve(self, path):
+        match = self.regex.search(path)
+        if match:
+            kwargs = match.groupdict()
+            if kwargs:
+                args = ()
+                kwargs.update(self.default_args)
+            else:
+                args = match.groups()
+        return self.callback, args, kwargs
+    
     def _get_callback(self):
         if self._callback is not None:
             return self._callback
