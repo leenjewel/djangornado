@@ -64,8 +64,10 @@ class LazyUrls(object):
             if regex:
                 if p_pattern.startswith("^"):
                     p_pattern = regex + p_pattern[1:]
-            if isinstance(u, RegexURLPattern) and re.match(p_pattern, pattern):
-                return u.resolve(pattern)
+            if isinstance(u, RegexURLPattern):
+                match = re.match(p_pattern, pattern)
+                if match:
+                    return u.resolve(match)
             elif isinstance(u, RegexURLResolver) and pattern.startswith(p_pattern[1:]):
                 return self._callback_from_patterns(u.urlpatterns, pattern, p_pattern)
         return None, None, None

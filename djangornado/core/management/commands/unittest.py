@@ -80,10 +80,10 @@ class UnitTestRequest(object):
         self.urlpath = self.get_url_path()
         if self.runmiddleware:
             self.run_middleware()
-        callback_func = urls.callback(self.urlpath)
+        callback_func, args, kwargs = urls.callback(self.urlpath)
         if callback_func is None:
             return "HTTP(404)"
-        url_result = callback_func(self)
+        url_result = callback_func(self, *args, **kwargs)
         if self.runmiddleware:
             self.run_middleware(isrequest = False)
         return url_result

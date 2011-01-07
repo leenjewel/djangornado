@@ -80,8 +80,7 @@ class RegexURLPattern(object):
             return
         self._callback_str = prefix + '.' + self._callback_str
 
-    def resolve(self, path):
-        match = self.regex.search(path)
+    def resolve(self, match = None):
         if match:
             kwargs = match.groupdict()
             if kwargs:
@@ -89,7 +88,8 @@ class RegexURLPattern(object):
                 kwargs.update(self.default_args)
             else:
                 args = match.groups()
-        return self.callback, args, kwargs
+            return self.callback, args, kwargs
+        return None, None, None
     
     def _get_callback(self):
         if self._callback is not None:
