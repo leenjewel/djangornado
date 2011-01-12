@@ -68,6 +68,7 @@ class DjangornadoHandler(RequestHandler):
         response.return_response(self)
     
     def get(self, pattern):
+        self._dt_request.path = pattern
         callback, args, kwargs, asyn = self.get_from_urls(pattern)
         if callback is None:
             raise HTTPError(404)
