@@ -5,8 +5,12 @@ from djangornado.conf import settings
 class DjangornadoRequest(object):
     _attrs = ["POST", "GET", "REQUEST", "session"]
     
-    def __init__(self, handler, *args, **kwargs):
+    def __init__(self, handler, path, *args, **kwargs):
         self.handler = handler
+        if path.startswith("/") is False:
+            self.path = "/" + path
+        else:
+            self.path = path
         try:
             self.path = args[0]
         except:

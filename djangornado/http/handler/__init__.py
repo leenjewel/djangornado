@@ -29,8 +29,8 @@ class DjangornadoHandler(RequestHandler):
             raise HTTPError(500)
     
     def _execute(self, transforms, *args, **kwargs):
-        self._dt_request = DjangornadoRequest(self, *args, **kwargs)
         try:
+            self._dt_request = DjangornadoRequest(self, *args, **kwargs)
             for processer in middleware.request_middleware:
                 response = processer(self._dt_request)
                 if response and isinstance(response, BaseResponse):
@@ -68,7 +68,6 @@ class DjangornadoHandler(RequestHandler):
         response.return_response(self)
     
     def get(self, pattern):
-        self._dt_request.path = pattern
         callback, args, kwargs, asyn = self.get_from_urls(pattern)
         if callback is None:
             raise HTTPError(404)
