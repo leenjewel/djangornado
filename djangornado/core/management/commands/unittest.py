@@ -88,6 +88,12 @@ class UnitTestRequest(object):
             self.run_middleware(isrequest = False)
         return url_result
     
+    def _get_url_path(self):
+        if self.urlpath and self.urlpath.startswith("/") is False:
+            return "/" + self.urlpath
+        return self.urlpath
+    path = property(_get_url_path)
+    
     def run_middleware(self, isrequest = True):
         if isrequest:
             unit_middleware = middleware.request_middleware
