@@ -30,12 +30,12 @@ class DjangornadoHandler(RequestHandler):
     
     def _execute(self, transforms, *args, **kwargs):
         try:
+            self._transforms = transforms
             self._dt_request = DjangornadoRequest(self, *args, **kwargs)
             for processer in middleware.request_middleware:
                 response = processer(self._dt_request)
                 if response and isinstance(response, BaseResponse):
                     self._render_response(response)
-                    self._transforms = transforms
                     return self.finish()
             super(DjangornadoHandler, self)._execute(transforms, *args, **kwargs)
         except Exception, e:
