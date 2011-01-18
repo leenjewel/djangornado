@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import sys
 import traceback
 from tornado.web import HTTPError
 from tornado.web import RequestHandler
@@ -26,7 +27,9 @@ class DjangornadoHandler(RequestHandler):
             """ %(str(e), str(exstr).replace("\n", "<br>")))
             self.finish()
         else:
-            raise HTTPError(500)
+            print >> sys.stderr, e
+            print >> sys.stderr, traceback.format_exc()
+            super(DjangornadoHandler, self)._handle_request_exception(HTTPError(500))
     
     def _execute(self, transforms, *args, **kwargs):
         try:
