@@ -46,3 +46,11 @@ class Command(LabelCommand):
         settings_contents = re.sub(r"(?<=cookie_secret = ')'", cookie_secret + "'", settings_contents)
         fp.write(settings_contents)
         fp.close()
+        
+        main_script_file = os.path.join(directory, project_name, 'service.sh')
+        script_contents = open(main_script_file, 'r').read()
+        fp = open(main_script_file, "w")
+        script_contents = re.sub(r'(?<=work_path=")"', os.path.join(directory, project_name) + '"', script_contents)
+        script_contents = re.sub(r'(?<=project_name=")"', project_name + '"', script_contents)
+        fp.write(script_contents)
+        fp.close()

@@ -133,7 +133,7 @@ def copy_helper(app_or_project, name, directory, other_name=''):
             if subdir.startswith('.'):
                 del subdirs[i]
         for f in files:
-            if not f.endswith('.py'):
+            if not (f.endswith('.py') or f.endswith('.sh') or f.endswith('.log')):
                 # Ignore .pyc, .pyo, .py.class etc, as they cause various
                 # breakages.
                 continue
